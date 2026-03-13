@@ -116,6 +116,40 @@ From any product detail page, scroll to the bottom:
 
 ---
 
+## Business — 318ecom LLC
+
+This project is operated under **318ecom LLC**, a Louisiana limited liability company domiciled in East Carroll Parish.
+
+The `business/` folder contains everything needed to form and run the LLC:
+
+| Document | What It Covers |
+|----------|---------------|
+| [`00_MASTER_CHECKLIST.md`](business/00_MASTER_CHECKLIST.md) | Step-by-step formation checklist, estimated startup costs (~$135), important contacts and phone numbers |
+| [`01_ARTICLES_OF_ORGANIZATION.md`](business/01_ARTICLES_OF_ORGANIZATION.md) | Exactly what to fill in on the LA Secretary of State website — name, purpose, registered agent, NAICS code, fees |
+| [`02_OPERATING_AGREEMENT.md`](business/02_OPERATING_AGREEMENT.md) | Full operating agreement template — management, capital contributions, profit allocation, dissolution, indemnification |
+| [`03_EIN_APPLICATION.md`](business/03_EIN_APPLICATION.md) | Walk-through of every question on the IRS online EIN form, tax classification options (disregarded entity vs S-Corp) |
+| [`04_LOUISIANA_COMPLIANCE.md`](business/04_LOUISIANA_COMPLIANCE.md) | Annual report, state income tax, sales tax, self-employment tax, quarterly estimated payments, record keeping calendar |
+| [`05_BANK_ACCOUNT_SETUP.md`](business/05_BANK_ACCOUNT_SETUP.md) | What to bring to the bank, local options near Lake Providence, online banks (Mercury, Relay, Bluevine), 30% tax savings rule |
+
+### Formation Order
+
+1. File Articles of Organization with LA Secretary of State ($100 online)
+2. Sign the Operating Agreement (keep with your records)
+3. Apply for EIN at irs.gov (free, takes 5 minutes)
+4. Open a business bank account (bring EIN letter + Articles + Operating Agreement + ID)
+5. Register with Louisiana Department of Revenue on LaTAP
+6. Start selling
+
+### Key Compliance Dates
+
+| What | When |
+|------|------|
+| LA Annual Report ($30) | Your LLC formation anniversary |
+| Federal + State Tax Returns | April 15 |
+| Quarterly Estimated Taxes | April 15, June 15, September 15, January 15 |
+
+---
+
 ## Developer Setup
 
 If you want to run from source instead of the exe:
