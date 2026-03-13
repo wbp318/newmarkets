@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Opportunities — NewMarkets{% endblock %}
+{% block content %}
+<div class="flex-between">
+    <h1>Market Opportunities</h1>
+    <div class="flex gap-1">
+        <select id="market-filter" onchange="window.location.href='/gaps?market='+this.value">
+            <option value="">All Markets</option>
+            <option value="mx" {% if market_filter == 'mx' %}selected{% endif %}>Mexico</option>
+            <option value="co" {% if market_filter == 'co' %}selected{% endif %}>Colombia</option>
+            <option value="br" {% if market_filter == 'br' %}selected{% endif %}>Brazil</option>
+            <option value="ar" {% if market_filter == 'ar' %}selected{% endif %}>Argentina</option>
+        </select>
+        <select id="status-filter" onchange="window.location.href='/gaps?status='+this.value+'&market={{ market_filter or '' }}'">
+            <option value="">All Statuses</option>
+            <option value="new" {% if status_filter == 'new' %}selected{% endif %}>New</option>
+            <option value="researching" {% if status_filter == 'researching' %}selected{% endif %}>Researching</option>
+            <option value="launching" {% if status_filter == 'launching' %}selected{% endif %}>Launching</option>
+            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="passed" {% if status_filter == 'passed' %}selected{% endif %}>Passed</option>
+        </select>
+    </div>
+</div>
+
+{% if opportunities %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Market</th>
+                <th>Gap Score</th>
+                <th>Trend</th>
+                <th>Est. Margin</th>
+                <th>Status</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opp in opportunities %}
+            <tr>
+                <td><a href="/products/{{ opp.product_id }}" style="color:var(--primary)">{{ opp.product.title[:50] }}{% if opp.product.title|length > 50 %}...{% endif %}</a></td>
+                <td>{{ opp.market | upper }}</td>
+                <td>
+                    <div class="flex gap-1" style="align-items:center">
+                        <div class="score-bar" style="width:80px">
+                            <div class="score-fill" style="width:{{ opp.gap_score }}%;background:{% if opp.gap_score >= 70 %}var(--success){% elif opp.gap_score >= 40 %}var(--warning){% else %}var(--danger){% endif %}"></div>
+                        </div>
+                        <span>{{ opp.gap_score }}</span>
+                    </div>
+                </td>
+                <td>{{ opp.trend_velocity or '—' }}</td>
+                <td>{% if opp.estimated_margin %}{{ opp.estimated_margin }}%{% else %}—{% endif %}</td>
+                <td>
+                    <select hx-post="/api/opportunity/{{ opp.id }}/status" hx-trigger="change" name="status" style="width:auto">
+                        {% for s in ['new','researching','launching','active','passed'] %}
+                        <option value="{{ s }}" {% if opp.status == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="text-sm text-muted">{{ opp.updated_at.strftime('%m/%d') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:3rem">
+    <p class="text-muted">No opportunities found. Run market analysis on your products first.</p>
+</div>
+{% endif %}
+{% endblock %}

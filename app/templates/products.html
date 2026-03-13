@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Products — NewMarkets{% endblock %}
+{% block content %}
+<div class="flex-between">
+    <h1>Products ({{ products | length }})</h1>
+    <a href="/" class="btn btn-primary btn-sm">+ Add Product</a>
+</div>
+
+{% if products %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Source</th>
+                <th>Trend</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in products %}
+            <tr>
+                <td>
+                    <div class="flex gap-1" style="align-items:center">
+                        {% if p.image_url %}
+                        <img src="{{ p.image_url }}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:4px">
+                        {% endif %}
+                        <a href="/products/{{ p.id }}" style="color:var(--primary)">{{ p.title[:60] }}{% if p.title|length > 60 %}...{% endif %}</a>
+                    </div>
+                </td>
+                <td class="text-sm text-muted">{{ p.category or '—' }}</td>
+                <td>{% if p.price_usd %}${{ "%.2f" | format(p.price_usd) }}{% else %}—{% endif %}</td>
+                <td><span class="badge badge-{% if p.source == 'amazon' %}yellow{% elif p.source == 'tiktok' %}purple{% else %}blue{% endif %}">{{ p.source }}</span></td>
+                <td>{{ p.trend_score or 0 }}</td>
+                <td>
+                    <a href="/products/{{ p.id }}" class="btn btn-primary btn-sm">View</a>
+                    <button class="btn btn-success btn-sm" hx-post="/api/analyze/{{ p.id }}" hx-target="#flash-{{ p.id }}" hx-swap="innerHTML">Analyze</button>
+                    <span id="flash-{{ p.id }}"></span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:3rem">
+    <p class="text-muted">No products yet. Add one from the dashboard or run a scraper.</p>
+</div>
+{% endif %}
+{% endblock %}

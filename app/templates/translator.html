@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Ad Copy Translator — NewMarkets{% endblock %}
+{% block content %}
+<h1>Ad Copy Translator</h1>
+
+<div class="grid">
+    <div class="card">
+        <h2>Translate</h2>
+        <form hx-post="/api/translate" hx-target="#translate-result" hx-swap="innerHTML">
+            <div class="form-group">
+                <label>Product</label>
+                <select name="product_id" required>
+                    <option value="">Select a product...</option>
+                    {% for p in products %}
+                    <option value="{{ p.id }}" {% if selected_product_id == p.id %}selected{% endif %}>{{ p.title[:60] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Target Language</label>
+                <select name="language">
+                    <option value="es">Spanish (MX, CO, AR)</option>
+                    <option value="pt">Portuguese (BR)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Target Country (for localization)</label>
+                <select name="target_country">
+                    <option value="Mexico">Mexico</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Argentina">Argentina</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Headline (English)</label>
+                <input type="text" name="headline" placeholder="e.g. The Ultimate Portable Blender" required>
+            </div>
+            <div class="form-group">
+                <label>Body Copy (English)</label>
+                <textarea name="body" rows="4" placeholder="Write your ad body copy here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Call to Action (English)</label>
+                <input type="text" name="cta" placeholder="e.g. Shop Now — 50% Off Today">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                Translate with Claude
+                <span class="htmx-indicator"><span class="spinner"></span></span>
+            </button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Result</h2>
+        <div id="translate-result">
+            <p class="text-muted text-sm">Fill out the form and click translate to see results here.</p>
+        </div>
+    </div>
+</div>
+
+{% if recent_translations %}
+<div class="card mt-2">
+    <h2>Recent Translations</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Lang</th>
+                <th>Original</th>
+                <th>Translated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in recent_translations %}
+            <tr>
+                <td class="text-sm">{{ t.product.title[:30] }}</td>
+                <td><span class="badge badge-purple">{{ t.ad_type }}</span></td>
+                <td>{{ t.language | upper }}</td>
+                <td class="text-sm">{{ t.original_copy[:40] }}{% if t.original_copy|length > 40 %}...{% endif %}</td>
+                <td class="text-sm">{{ t.translated_copy[:40] }}{% if t.translated_copy|length > 40 %}...{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

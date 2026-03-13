@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title[:40] }} — NewMarkets{% endblock %}
+{% block content %}
+<div class="flex-between">
+    <h1>{{ product.title }}</h1>
+    <a href="/products" class="btn btn-sm" style="color:var(--text-muted)">&larr; Back</a>
+</div>
+
+<div class="grid mt-1">
+    <div class="card">
+        <h2>Product Info</h2>
+        {% if product.image_url %}
+        <img src="{{ product.image_url }}" alt="" style="width:100%;max-width:200px;border-radius:8px;margin-bottom:1rem">
+        {% endif %}
+        <table>
+            <tr><td class="text-muted">Category</td><td>{{ product.category or '—' }}</td></tr>
+            <tr><td class="text-muted">Price</td><td>{% if product.price_usd %}${{ "%.2f" | format(product.price_usd) }}{% else %}—{% endif %}</td></tr>
+            <tr><td class="text-muted">Source</td><td><span class="badge badge-{% if product.source == 'amazon' %}yellow{% elif product.source == 'tiktok' %}purple{% else %}blue{% endif %}">{{ product.source }}</span></td></tr>
+            <tr><td class="text-muted">Rank</td><td>{{ product.source_rank or '—' }}</td></tr>
+            <tr><td class="text-muted">Trend Score</td><td>{{ product.trend_score or 0 }}</td></tr>
+            <tr><td class="text-muted">First Seen</td><td>{{ product.first_seen.strftime('%Y-%m-%d') }}</td></tr>
+            {% if product.source_url %}
+            <tr><td class="text-muted">Link</td><td><a href="{{ product.source_url }}" target="_blank" style="color:var(--primary)">View Source</a></td></tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Market Analysis</h2>
+        <button class="btn btn-primary btn-sm" hx-post="/api/analyze/{{ product.id }}" hx-target="#analysis-result" hx-swap="innerHTML" style="margin-bottom:1rem">
+            Run Analysis (All Markets)
+            <span class="htmx-indicator"><span class="spinner"></span></span>
+        </button>
+        <div id="analysis-result">
+            {% if market_checks %}
+            <table>
+                <thead><tr><th>Market</th><th>Found</th><th>Competitors</th><th>Avg Price</th></tr></thead>
+                <tbody>
+                    {% for mc in market_checks %}
+                    <tr>
+                        <td>{{ mc.market | upper }}</td>
+                        <td>{% if mc.found %}<span class="badge badge-green">Yes</span>{% else %}<span class="badge badge-red">No</span>{% endif %}</td>
+                        <td>{{ mc.competitor_count }}</td>
+                        <td>{% if mc.avg_price_usd %}${{ "%.2f" | format(mc.avg_price_usd) }}{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted text-sm">No market checks yet. Click "Run Analysis" above.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="grid mt-1">
+    <div class="card">
+        <h2>Opportunities</h2>
+        {% if opportunities %}
+        <table>
+            <thead><tr><th>Market</th><th>Gap Score</th><th>Margin</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for opp in opportunities %}
+                <tr>
+                    <td>{{ opp.market | upper }}</td>
+                    <td>
+                        <div class="score-bar" style="width:80px;display:inline-block;vertical-align:middle">
+                            <div class="score-fill" style="width:{{ opp.gap_score }}%;background:{% if opp.gap_score >= 70 %}var(--success){% elif opp.gap_score >= 40 %}var(--warning){% else %}var(--danger){% endif %}"></div>
+                        </div>
+                        {{ opp.gap_score }}
+                    </td>
+                    <td>{% if opp.estimated_margin %}{{ opp.estimated_margin }}%{% else %}—{% endif %}</td>
+                    <td>
+                        <select hx-post="/api/opportunity/{{ opp.id }}/status" hx-trigger="change" name="status" style="width:auto">
+                            {% for s in ['new','researching','launching','active','passed'] %}
+                            <option value="{{ s }}" {% if opp.status == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted text-sm">Run market analysis to find opportunities.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h2>Suppliers</h2>
+        <button class="btn btn-primary btn-sm" hx-post="/api/suppliers/{{ product.id }}" hx-target="#suppliers-list" hx-swap="innerHTML" style="margin-bottom:1rem">
+            Find Suppliers
+            <span class="htmx-indicator"><span class="spinner"></span></span>
+        </button>
+        <div id="suppliers-list">
+            {% if suppliers %}
+            <table>
+                <thead><tr><th>Supplier</th><th>Price</th><th>MOQ</th><th>Ship</th></tr></thead>
+                <tbody>
+                    {% for s in suppliers %}
+                    <tr>
+                        <td><a href="{{ s.url }}" target="_blank" style="color:var(--primary)">{{ s.supplier_name[:40] }}</a></td>
+                        <td>{% if s.unit_price_usd %}${{ "%.2f" | format(s.unit_price_usd) }}{% else %}—{% endif %}</td>
+                        <td>{{ s.min_order or '—' }}</td>
+                        <td>{% if s.shipping_days %}{{ s.shipping_days }}d{% else %}—{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted text-sm">Click "Find Suppliers" to search AliExpress.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card mt-1">
+    <div class="flex-between">
+        <h2>Translations</h2>
+        <a href="/translator?product_id={{ product.id }}" class="btn btn-primary btn-sm">Translate Ad Copy</a>
+    </div>
+    {% if translations %}
+    <table>
+        <thead><tr><th>Type</th><th>Language</th><th>Original</th><th>Translated</th></tr></thead>
+        <tbody>
+            {% for t in translations %}
+            <tr>
+                <td><span class="badge badge-purple">{{ t.ad_type }}</span></td>
+                <td>{{ t.language | upper }}</td>
+                <td class="text-sm">{{ t.original_copy[:60] }}{% if t.original_copy|length > 60 %}...{% endif %}</td>
+                <td class="text-sm">{{ t.translated_copy[:60] }}{% if t.translated_copy|length > 60 %}...{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted text-sm">No translations yet.</p>
+    {% endif %}
+</div>
+
+<div class="card mt-1">
+    <h2>Generate Landing Page</h2>
+    <form hx-post="/api/landing/{{ product.id }}" hx-target="#landing-result" hx-swap="innerHTML">
+        <div class="flex gap-2">
+            <div class="form-group" style="flex:1">
+                <label>Language</label>
+                <select name="language">
+                    <option value="es">Spanish</option>
+                    <option value="pt">Portuguese</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex:1">
+                <label>Market</label>
+                <select name="market">
+                    <option value="mx">Mexico</option>
+                    <option value="co">Colombia</option>
+                    <option value="br">Brazil</option>
+                    <option value="ar">Argentina</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">
+            Generate & Export
+            <span class="htmx-indicator"><span class="spinner"></span></span>
+        </button>
+    </form>
+    <div id="landing-result" class="mt-1"></div>
+</div>
+{% endblock %}

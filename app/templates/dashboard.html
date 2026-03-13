@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — NewMarkets{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="number">{{ product_count }}</div>
+        <div class="label">Products Tracked</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ opportunity_count }}</div>
+        <div class="label">Opportunities</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ top_score }}</div>
+        <div class="label">Top Gap Score</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ translation_count }}</div>
+        <div class="label">Translations</div>
+    </div>
+</div>
+
+<div class="flex-between mb-2">
+    <h2>Quick Actions</h2>
+</div>
+<div class="grid">
+    <div class="card">
+        <h2>Add Product</h2>
+        <form hx-post="/products/add" hx-target="#add-result" hx-swap="innerHTML">
+            <div class="form-group">
+                <label>Product Title</label>
+                <input type="text" name="title" required placeholder="e.g. Portable Blender">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" name="category" placeholder="e.g. Health & Household">
+            </div>
+            <div class="form-group">
+                <label>Price (USD)</label>
+                <input type="number" name="price_usd" step="0.01" placeholder="29.99">
+            </div>
+            <div class="form-group">
+                <label>Source URL</label>
+                <input type="url" name="source_url" placeholder="https://amazon.com/...">
+            </div>
+            <div class="form-group">
+                <label>Image URL</label>
+                <input type="url" name="image_url" placeholder="https://...">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                Add Product
+                <span class="htmx-indicator"><span class="spinner"></span></span>
+            </button>
+        </form>
+        <div id="add-result" class="mt-1"></div>
+    </div>
+
+    <div class="card">
+        <h2>Run Scrapers</h2>
+        <p class="text-muted text-sm" style="margin-bottom:1rem">Discover trending products from US e-commerce platforms.</p>
+        <div class="flex gap-1" style="flex-direction:column">
+            <button class="btn btn-primary" hx-post="/api/scrape/amazon" hx-target="#scrape-result" hx-swap="innerHTML">
+                Scrape Amazon
+                <span class="htmx-indicator"><span class="spinner"></span></span>
+            </button>
+            <button class="btn btn-primary" hx-post="/api/scrape/tiktok" hx-target="#scrape-result" hx-swap="innerHTML">
+                Scrape TikTok
+                <span class="htmx-indicator"><span class="spinner"></span></span>
+            </button>
+            <button class="btn btn-success" hx-post="/api/scrape/all" hx-target="#scrape-result" hx-swap="innerHTML">
+                Run All Scrapers
+                <span class="htmx-indicator"><span class="spinner"></span></span>
+            </button>
+        </div>
+        <div id="scrape-result" class="mt-1"></div>
+    </div>
+</div>
+
+{% if recent_opportunities %}
+<div class="card mt-2">
+    <h2>Top Opportunities</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Market</th>
+                <th>Gap Score</th>
+                <th>Est. Margin</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for opp in recent_opportunities %}
+            <tr>
+                <td><a href="/products/{{ opp.product_id }}" style="color:var(--primary)">{{ opp.product.title[:50] }}</a></td>
+                <td>{{ opp.market | upper }}</td>
+                <td>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width:{{ opp.gap_score }}%;background:{% if opp.gap_score >= 70 %}var(--success){% elif opp.gap_score >= 40 %}var(--warning){% else %}var(--danger){% endif %}"></div>
+                    </div>
+                    <span class="text-sm">{{ opp.gap_score }}</span>
+                </td>
+                <td>{% if opp.estimated_margin %}{{ opp.estimated_margin }}%{% else %}—{% endif %}</td>
+                <td><span class="badge badge-{% if opp.status == 'new' %}blue{% elif opp.status == 'researching' %}yellow{% elif opp.status == 'launching' %}purple{% elif opp.status == 'active' %}green{% else %}red{% endif %}">{{ opp.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}
