@@ -1,44 +1,44 @@
 # Python
-*.py linguist-language=Python
-*.pyw linguist-language=Python
-*.pyi linguist-language=Python
+*.py linguist-detectable=true linguist-language=Python
+*.pyw linguist-detectable=true linguist-language=Python
+*.pyi linguist-detectable=true linguist-language=Python
 
 # HTML / Jinja2 Templates
-*.html linguist-language=HTML
+*.html linguist-detectable=true linguist-language=HTML
 
 # CSS
-*.css linguist-language=CSS
+*.css linguist-detectable=true linguist-language=CSS
 
 # JavaScript
-*.js linguist-language=JavaScript
+*.js linguist-detectable=true linguist-language=JavaScript
 
 # SQL
-*.sql linguist-language=SQL
+*.sql linguist-detectable=true linguist-language=SQL
 
 # Shell
-*.sh linguist-language=Shell
-*.bash linguist-language=Shell
+*.sh linguist-detectable=true linguist-language=Shell
+*.bash linguist-detectable=true linguist-language=Shell
 
 # Batch / PowerShell
-*.bat linguist-language=Batchfile
-*.cmd linguist-language=Batchfile
-*.ps1 linguist-language=PowerShell
+*.bat linguist-detectable=true linguist-language=Batchfile
+*.cmd linguist-detectable=true linguist-language=Batchfile
+*.ps1 linguist-detectable=true linguist-language=PowerShell
 
 # Config / Data
-*.json linguist-language=JSON
-*.yaml linguist-language=YAML
-*.yml linguist-language=YAML
-*.toml linguist-language=TOML
-*.ini linguist-language=INI
-*.cfg linguist-language=INI
-*.env linguist-language=Dotenv
-*.env.example linguist-language=Dotenv
+*.json linguist-detectable=true linguist-language=JSON
+*.yaml linguist-detectable=true linguist-language=YAML
+*.yml linguist-detectable=true linguist-language=YAML
+*.toml linguist-detectable=true linguist-language=TOML
+*.ini linguist-detectable=true linguist-language=INI
+*.cfg linguist-detectable=true linguist-language=INI
+*.env linguist-detectable=true linguist-language=Dotenv
+*.env.example linguist-detectable=true linguist-language=Dotenv
 
 # Markdown
-*.md linguist-language=Markdown
+*.md linguist-detectable=true linguist-language=Markdown
 
 # PyInstaller spec
-*.spec linguist-language=Python
+*.spec linguist-detectable=true linguist-language=Python
 
 # Line endings
 * text=auto
