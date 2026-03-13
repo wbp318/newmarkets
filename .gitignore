@@ -1,6 +1,37 @@
+# Python
 __pycache__/
 *.pyc
-*.db
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+*.spec.bak
+
+# Environment
 .env
+.venv/
+venv/
+env/
+
+# Database
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Project
 exports/
 .claude/
+
+# PyInstaller
+*.manifest
